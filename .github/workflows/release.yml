@@ -1,0 +1,49 @@
+name: 'release direwolf ubuntu package'
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Build and Release Ubuntu Package
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 8
+
+      - name: dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libasound2-dev libudev-dev libhamlib-dev gpsd
+
+      - name: create build environment
+        run: cmake -E make_directory ${{github.workspace}}/build
+
+      - name: configure
+        working-directory: ${{github.workspace}}/build
+        run: |
+          cmake $GITHUB_WORKSPACE \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_COMPILER=gcc \
+            -DCMAKE_CXX_COMPILER=g++
+
+      - name: build
+        working-directory: ${{github.workspace}}/build
+        run: cmake --build . --config Release
+
+      - name: package
+        working-directory: ${{github.workspace}}/build
+        run: make package
+
+      - name: create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{github.workspace}}/build/direwolf-*.zip
+          generate_release_notes: true

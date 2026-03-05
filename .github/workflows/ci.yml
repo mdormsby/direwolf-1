@@ -144,7 +144,7 @@ jobs:
         shell: bash
         working-directory: ${{github.workspace}}/build
         run: |
-          if [ "$RUNNER_OS" == "Windows" ] ||  [ "$RUNNER_OS" == "macOS" ]; then
+          if [ "$RUNNER_OS" == "Windows" ] || [ "$RUNNER_OS" == "macOS" ] || [ "${{ matrix.config.build_type }}" == "Release" ]; then
             make package
           fi
       - name: archive binary
