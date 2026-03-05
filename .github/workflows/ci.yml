@@ -9,10 +9,12 @@ on:
         required: false
   push:
     paths-ignore:
-      - '.github/**'
+      - 'doc/**'
+      - '**.md'
   pull_request:
     paths-ignore:
-      - '.github/**'
+      - 'doc/**'
+      - '**.md'
 
 jobs:
   build:
