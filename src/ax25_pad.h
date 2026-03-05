@@ -31,9 +31,11 @@
 				/* characters so throw in a couple extra bytes */
 				/* to be safe. */
 
-/* Minimum buffer size for ax25_format_addrs result:                          */
-/* source(12) + ">"(1) + dest(12) + 8*(","(1)+addr(12)+"*"(1)) + ":"(1) + NUL */
-#define AX25_FORMAT_ADDRS_LEN (AX25_MAX_ADDR_LEN + 1 + AX25_MAX_ADDR_LEN + AX25_MAX_REPEATERS * (1 + AX25_MAX_ADDR_LEN + 1) + 1 + 1)
+/* Minimum buffer size for ax25_format_addrs result:                                           */
+/* source(AX25_MAX_ADDR_LEN) + ">"(1) + dest(AX25_MAX_ADDR_LEN)                               */
+/* + AX25_MAX_REPEATERS*(","(1)+addr(AX25_MAX_ADDR_LEN)+"*"(1)) + ":"(1) + NUL(1)             */
+/* AX25_MAX_ADDR_LEN=12, AX25_MAX_REPEATERS=8 => 12+1+12+8*(1+12+1)+2 = 139                   */
+#define AX25_FORMAT_ADDRS_LEN (AX25_MAX_ADDR_LEN + 1 + AX25_MAX_ADDR_LEN + AX25_MAX_REPEATERS * (1 + AX25_MAX_ADDR_LEN + 1) + 2)
 
 #define AX25_MIN_INFO_LEN 0	/* Previously 1 when considering only APRS. */
 				
