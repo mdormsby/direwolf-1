@@ -3975,14 +3975,16 @@ time_t get_timestamp (decode_aprs_t *A, char *p)
 	    return ((time_t)0);
 	}
 
+	struct tm tm_buf;
 	struct tm *ptm;
 
 	time_t ts;
 
 	ts = time(NULL);
-	// FIXME: use gmtime_r instead.
-	// Besides not being thread safe, gmtime could possibly return null.
-	ptm = gmtime(&ts);
+	ptm = gmtime_r(&ts, &tm_buf);
+	if (ptm == NULL) {
+	    return ((time_t)0);
+	}
 
 	pdhm = (void *)p;
 	phms = (void *)p;
@@ -5207,7 +5209,7 @@ int main (int argc, char *argv[])
 
 	      pp = ax25_from_frame(bytes, num_bytes, alevel);
 	      if (pp != NULL) {
-	        char addrs[120];
+	        char addrs[AX25_FORMAT_ADDRS_LEN];
 	        unsigned char *pinfo;
 	        int info_len;
 	        decode_aprs_t A;
@@ -5217,7 +5219,7 @@ int main (int argc, char *argv[])
 	        ax25_hex_dump (pp);
 	        dw_printf ("-------------------\n");
 
-	        ax25_format_addrs (pp, addrs);
+	        ax25_format_addrs (pp, addrs, sizeof(addrs));
 	        text_color_set(DW_COLOR_DECODED);
 	        dw_printf ("%s", addrs);
 

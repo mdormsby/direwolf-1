@@ -1978,17 +1978,14 @@ int ax25_get_modulo (packet_t this_p)
  *			SRC>DST,RPT1,RPT2*,RPT3:
  *
  *			No asterisk means the source is being heard directly.
- *			Needs to be 101 characters to avoid overflowing.
- *			(Up to 100 characters + \0)
+ *			Use AX25_FORMAT_ADDRS_LEN as the minimum buffer size.
  *
  * Errors:	No error checking so caller needs to be careful.
  *
  *
  *------------------------------------------------------------------*/
 
-// TODO: max len for result.  buffer overflow?
-
-void ax25_format_addrs (packet_t this_p, char *result)
+void ax25_format_addrs (packet_t this_p, char *result, size_t result_size)
 {
 	int i;
 	int heard;
@@ -2007,25 +2004,24 @@ void ax25_format_addrs (packet_t this_p, char *result)
 	}
 
 	ax25_get_addr_with_ssid (this_p, AX25_SOURCE, stemp);
-	// FIXME:  For ALL strcat: Pass in sizeof result and use strlcat.
-	strcat (result, stemp);
-	strcat (result, ">");
+	strlcat (result, stemp, result_size);
+	strlcat (result, ">", result_size);
 
 	ax25_get_addr_with_ssid (this_p, AX25_DESTINATION, stemp);
-	strcat (result, stemp);
+	strlcat (result, stemp, result_size);
 
 	heard = ax25_get_heard(this_p);
 
 	for (i=(int)AX25_REPEATER_1; i<this_p->num_addr; i++) {
 	  ax25_get_addr_with_ssid (this_p, i, stemp);
-	  strcat (result, ",");
-	  strcat (result, stemp);
+	  strlcat (result, ",", result_size);
+	  strlcat (result, stemp, result_size);
 	  if (i == heard) {
-	    strcat (result, "*");
+	    strlcat (result, "*", result_size);
 	  }
 	}
 	
-	strcat (result, ":");
+	strlcat (result, ":", result_size);
 
 	// dw_printf ("DEBUG ax25_format_addrs, num_addr = %d, result = '%s'\n", this_p->num_addr, result);
 }

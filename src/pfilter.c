@@ -154,7 +154,7 @@ static void print_error (pfstate_t *pf, char *msg);
 
 static int filt_bodgu (pfstate_t *pf, char *pattern);
 static int filt_t (pfstate_t *pf);
-static int filt_r (pfstate_t *pf, char *sdist);
+static int filt_r (pfstate_t *pf, char *sdist, size_t sdist_size);
 static int filt_s (pfstate_t *pf);
 static int filt_i (pfstate_t *pf);
 
@@ -695,7 +695,7 @@ static int parse_filter_spec (pfstate_t *pf)
 	  /* range */
 	  char sdist[30];
 	  strcpy (sdist, "unknown distance");
-	  result = filt_r (pf, sdist);
+	  result = filt_r (pf, sdist, sizeof(sdist));
 
 	  if (s_debug >= 2) {
 	    text_color_set(DW_COLOR_DEBUG);
@@ -960,7 +960,7 @@ static int filt_t (pfstate_t *pf)
  *
  *------------------------------------------------------------------------------*/
 
-static int filt_r (pfstate_t *pf, char *sdist)
+static int filt_r (pfstate_t *pf, char *sdist, size_t sdist_size)
 {
 	char str[MAX_TOKEN_LEN];
 	char *cp;
@@ -1001,7 +1001,7 @@ static int filt_r (pfstate_t *pf, char *sdist)
 
 	km = ll_distance_km (dlat, dlon, pf->decoded.g_lat, pf->decoded.g_lon);
 
-	sprintf (sdist, "%.2f km", km);
+	snprintf (sdist, sdist_size, "%.2f km", km);
 
 	if (km <= ddist) {
 	  return (1);
