@@ -29,14 +29,11 @@ file(WRITE "${CMAKE_BINARY_DIR}/direwolf.conf" "${file_content}")
 # takes precedence for the same name.
 # https://sources.debian.org/src/direwolf/1.7+dfsg-2/debian/patches/lib-udev-rules/
 # says that we should use the /usr/lib/udev/rules.d location when building a package.
-# TODO:  I think the proper solution is to select the location based on whether
-# the application installation location is /usr/local or /usr.
+# Using a relative path so that CPack can package without requiring root permissions.
+# When installed with CMAKE_INSTALL_PREFIX=/usr, this puts the file in /usr/lib/udev/rules.d/
+# which is the standard location for package-installed udev rules.
 if(LINUX)
-  if (CMAKE_INSTALL_PREFIX STREQUAL "/usr/local") 
-    install(FILES "${CUSTOM_CONF_DIR}/99-direwolf-cmedia.rules" DESTINATION /etc/udev/rules.d/)
-  else()
-    install(FILES "${CUSTOM_CONF_DIR}/99-direwolf-cmedia.rules" DESTINATION /usr/lib/udev/rules.d/)
-  endif()
+  install(FILES "${CUSTOM_CONF_DIR}/99-direwolf-cmedia.rules" DESTINATION lib/udev/rules.d/)
 endif()
 
 install(FILES "${CMAKE_BINARY_DIR}/direwolf.conf" DESTINATION ${INSTALL_CONF_DIR})
